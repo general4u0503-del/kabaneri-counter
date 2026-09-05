@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カバネリ海門決戦カウンター</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: #f3f4f6;
+    color: #222;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px;
+  }
+  h1 { text-align: center; margin: 5px 0 18px; font-size: 28px; }
+  .rate {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 18px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .rate-title { font-size: 16px; color: #666; }
+  .rate-value { font-size: 36px; font-weight: 800; margin-top: 4px; }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    border-top: 7px solid;
+  }
+  .red { border-color: #e53935; }
+  .green { border-color: #2e9d4d; }
+  .blue { border-color: #2979ff; }
+
+  .name {
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .counter-row {
+    display: grid;
+    grid-template-columns: 1fr 62px 62px;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .label { font-size: 15px; font-weight: 600; }
+  .value {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+  }
+  button {
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .minus, .plus {
+    height: 42px;
+    font-size: 22px;
+    color: white;
+  }
+  .minus { background: #555; }
+  .plus { background: #222; }
+  .output {
+    width: 100%;
+    height: 48px;
+    margin-top: 12px;
+    color: white;
+    font-size: 17px;
+  }
+  .red .output { background: #e53935; }
+  .green .output { background: #2e9d4d; }
+  .blue .output { background: #2979ff; }
+
+  .history-box {
+    margin-top: 18px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .history-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .history-head h2 { margin: 0; }
+  #history {
+    margin-top: 12px;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .history-item {
+    border-top: 1px solid #ddd;
+    padding: 10px 4px;
+    display: grid;
+    grid-template-columns: 70px 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .history-name { font-weight: 800; }
+  .history-detail { color: #555; font-size: 13px; }
+  .history-points { font-weight: 800; font-size: 18px; }
+  .delete-history {
+    background: #eee;
+    color: #555;
+    border: 1px solid #ccc;
+    padding: 7px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .delete-history:hover { background: #ddd; }
+  .empty { color: #888; text-align: center; padding: 18px; }
+
+  @media (max-width: 760px) {
+    .cards { grid-template-columns: 1fr; }
+    h1 { font-size: 23px; }
+    .counter-row { grid-template-columns: 1fr 58px 58px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>カバネリ海門決戦カウンター</h1>
+
+  <div class="rate">
+    <div class="rate-title">チャンス目発光率</div>
+    <div class="rate-value" id="rate">0.00%</div>
+  </div>
+
+  <div class="cards">
+    <div class="card red">
+      <div class="name">🔴 無名</div>
+      <div class="counter-row">
+        <div class="label">チャンス目回数</div>
+        <div class="value" id="red-chance">0</div>
+        <div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('red','chance',-1)">−</button>
+        <button class="plus" onclick="changeCount('red','chance',1)">＋</button>
+      </div>
+
+      <div class="counter-row">
+        <div class="label">発光回数</div>
+        <div class="value" id="red-light">0</div>
+        <div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('red','light',-1)">−</button>
+        <button class="plus" onclick="changeCount('red','light',1)">＋</button>
+      </div>
+
+      <div class="counter-row">
+        <div class="label">高確中チャンス目</div>
+        <div class="value" id="red-high">0</div>
+        <div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('red','high',-1)">−</button>
+        <button class="plus" onclick="changeCount('red','high',1)">＋</button>
+      </div>
+
+      <button class="output" onclick="outputScore('red')">出力</button>
+    </div>
+
+    <div class="card green">
+      <div class="name">🟢 生駒</div>
+      <div class="counter-row">
+        <div class="label">チャンス目回数</div>
+        <div class="value" id="green-chance">0</div><div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('green','chance',-1)">−</button>
+        <button class="plus" onclick="changeCount('green','chance',1)">＋</button>
+      </div>
+
+      <div class="counter-row">
+        <div class="label">発光回数</div>
+        <div class="value" id="green-light">0</div><div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('green','light',-1)">−</button>
+        <button class="plus" onclick="changeCount('green','light',1)">＋</button>
+      </div>
+
+      <div class="counter-row">
+        <div class="label">高確中チャンス目</div>
+        <div class="value" id="green-high">0</div><div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('green','high',-1)">−</button>
+        <button class="plus" onclick="changeCount('green','high',1)">＋</button>
+      </div>
+
+      <button class="output" onclick="outputScore('green')">出力</button>
+    </div>
+
+    <div class="card blue">
+      <div class="name">🔵 カバネ</div>
+      <div class="counter-row">
+        <div class="label">チャンス目回数</div>
+        <div class="value" id="blue-chance">0</div><div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('blue','chance',-1)">−</button>
+        <button class="plus" onclick="changeCount('blue','chance',1)">＋</button>
+      </div>
+
+      <div class="counter-row">
+        <div class="label">発光回数</div>
+        <div class="value" id="blue-light">0</div><div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('blue','light',-1)">−</button>
+        <button class="plus" onclick="changeCount('blue','light',1)">＋</button>
+      </div>
+
+      <div class="counter-row">
+        <div class="label">高確中チャンス目</div>
+        <div class="value" id="blue-high">0</div><div></div>
+      </div>
+      <div class="counter-row">
+        <div></div>
+        <button class="minus" onclick="changeCount('blue','high',-1)">−</button>
+        <button class="plus" onclick="changeCount('blue','high',1)">＋</button>
+      </div>
+
+      <button class="output" onclick="outputScore('blue')">出力</button>
+    </div>
+  </div>
+
+  <div class="history-box">
+    <div class="history-head">
+      <h2>出力履歴</h2>
+    </div>
+    <div id="history">
+      <div class="empty">まだ出力履歴はありません。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const state = {
+  red:   { name: '無名', chance: 0, light: 0, high: 0, last: {chance:0, light:0, high:0}, total: 0 },
+  green: { name: '生駒', chance: 0, light: 0, high: 0, last: {chance:0, light:0, high:0}, total: 0 },
+  blue:  { name: 'カバネ', chance: 0, light: 0, high: 0, last: {chance:0, light:0, high:0}, total: 0 }
+};
+
+const history = [];
+
+function changeCount(color, type, amount) {
+  state[color][type] = Math.max(0, state[color][type] + amount);
+  updateDisplay();
+}
+
+function outputScore(color) {
+  const s = state[color];
+
+  const dc = s.chance - s.last.chance;
+  const dl = s.light - s.last.light;
+  const dh = s.high - s.last.high;
+
+  const points = dc * 1 + dl * 15 + dh * 15;
+
+  s.total += points;
+
+  history.unshift({
+    id: Date.now() + Math.random(),
+    color,
+    name: s.name,
+    dc, dl, dh, points,
+    snapshot: {
+      chance: s.chance,
+      light: s.light,
+      high: s.high
+    },
+    time: new Date().toLocaleTimeString('ja-JP', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })
+  });
+
+  // 今回の出力時点を次回の基準値として保存
+  s.last.chance = s.chance;
+  s.last.light = s.light;
+  s.last.high = s.high;
+
+  updateDisplay();
+}
+
+function updateDisplay() {
+  for (const color of ['red','green','blue']) {
+    document.getElementById(color + '-chance').textContent = state[color].chance;
+    document.getElementById(color + '-light').textContent = state[color].light;
+    document.getElementById(color + '-high').textContent = state[color].high;
+  }
+
+  const totalChance = state.red.chance + state.green.chance;
+  const totalLight = state.red.light + state.green.light;
+  const rate = totalChance === 0 ? 0 : (totalLight / totalChance) * 100;
+  document.getElementById('rate').textContent = rate.toFixed(2) + '%';
+
+  renderHistory();
+}
+
+function renderHistory() {
+  const box = document.getElementById('history');
+
+  if (history.length === 0) {
+    box.innerHTML = '<div class="empty">まだ出力履歴はありません。</div>';
+    return;
+  }
+
+  box.innerHTML = history.map(h => `
+    <div class="history-item">
+      <div class="history-name">${h.name}</div>
+      <div class="history-detail">
+        チャンス目 ${h.dc}回 ×1 ＋ 発光 ${h.dl}回 ×15 ＋ 高確 ${h.dh}回 ×15<br>
+        ${h.time}
+      </div>
+      <div class="history-points">${h.points}点</div>
+      <button class="delete-history" onclick="deleteHistory(${h.id})">削除</button>
+    </div>
+  `).join('');
+}
+
+function deleteHistory(id) {
+  const index = history.findIndex(h => h.id === id);
+  if (index === -1) return;
+
+  const item = history[index];
+
+  if (!confirm(`${item.name} ${item.points}点の履歴を削除しますか？`)) return;
+
+  // 履歴から削除し、その出力分の累計点を戻す
+  state[item.color].total -= item.points;
+
+  history.splice(index, 1);
+
+  // 「最後に出力した時点」を再計算。
+  // 履歴は新しい順なので、残っている同色の最新履歴を探す。
+  const latest = history.find(h => h.color === item.color);
+
+  if (latest) {
+    state[item.color].last = { ...latest.snapshot };
+  } else {
+    state[item.color].last = { chance: 0, light: 0, high: 0 };
+  }
+
+  updateDisplay();
+}
+
+updateDisplay();
+</script>
+</body>
+</html>
