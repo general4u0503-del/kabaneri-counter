@@ -106,7 +106,6 @@
       <div class="counter-row"><div class="label">高確中チャンス目</div><div class="value" id="red-high">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('red','high',-1)">−</button><button class="plus" onclick="changeCount('red','high',1)">＋</button></div>
       <button class="output" onclick="outputScore('red')">出力</button>
-      <div class="score">累計：<strong id="red-total">0</strong> 点</div>
     </div>
 
     <div class="card green">
@@ -118,7 +117,6 @@
       <div class="counter-row"><div class="label">高確中チャンス目</div><div class="value" id="green-high">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('green','high',-1)">−</button><button class="plus" onclick="changeCount('green','high',1)">＋</button></div>
       <button class="output" onclick="outputScore('green')">出力</button>
-      <div class="score">累計：<strong id="green-total">0</strong> 点</div>
     </div>
 
     <div class="card blue">
@@ -130,7 +128,6 @@
       <div class="counter-row"><div class="label">高確中チャンス目</div><div class="value" id="blue-high">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('blue','high',-1)">−</button><button class="plus" onclick="changeCount('blue','high',1)">＋</button></div>
       <button class="output" onclick="outputScore('blue')">出力</button>
-      <div class="score">累計：<strong id="blue-total">0</strong> 点</div>
     </div>
   </div>
 
@@ -185,7 +182,6 @@ function updateDisplay() {
     document.getElementById(color + '-chance').textContent = state[color].chance;
     document.getElementById(color + '-light').textContent = state[color].light;
     document.getElementById(color + '-high').textContent = state[color].high;
-    document.getElementById(color + '-total').textContent = state[color].total;
   }
 
   const totalChance = state.red.chance + state.green.chance;
