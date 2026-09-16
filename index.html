@@ -25,8 +25,8 @@
     background: #fff; border-radius: 14px; padding: 16px; margin-bottom: 18px;
     text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.08);
   }
-  .rate-title { font-size: 16px; color: #666; }
-  .rate-value { font-size: 36px; font-weight: 800; margin-top: 4px; }
+  .rate-title { font-size: 16px; color: #666; transform: translateX(12px); }
+  .rate-value { font-size: 36px; font-weight: 800; margin-top: 4px; transform: translateX(12px); }
   .top-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
   .top-panels .rate { margin-bottom: 0; }
   .bell-panel { background:#fff; border-radius:14px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
@@ -96,7 +96,7 @@
   @media (max-width: 760px) {
     .top-panels { grid-template-columns: 1fr 1fr; gap:8px; }
     .top-panels .rate,.bell-panel { padding:12px 8px; }
-    .rate-title { font-size:13px; } .rate-value { font-size:25px; }
+    .rate-title { font-size:13px; transform:translateX(8px); } .rate-value { font-size:25px; transform:translateX(8px); }
     .bell-title { font-size:18px; }
     .bell-count-row { grid-template-columns:1fr 34px 34px 34px; gap:3px; }
     .bell-label,.games-row label { font-size:10px; }
@@ -121,7 +121,6 @@
       <div class="rate-value" id="rate">0.00%</div>
     </div>
     <div class="bell-panel">
-      <div class="bell-title">下段ベル</div>
       <div class="bell-count-row">
         <div class="bell-label">下段ベル回数</div>
         <div class="bell-value" id="bell-count">0</div>
@@ -221,8 +220,8 @@ function outputScore(color) {
   // 赤・緑は従来どおり：チャンス目×1、発光×15、高確×15
   // 青（カバネ）のみ：チャンス目×1、発光×2、高確中チャンス目×2
   const points = color === 'blue'
-    ? dc * 1 + dl * 2 + dh * 2
-    : dc * 1 + dl * 15 + dh * 15;
+    ? (dc - dl) * 1 + dl * 2 + dh * 2
+    : (dc - dl) * 1 + dl * 15 + dh * 15;
 
   s.total += points;
   history.unshift({
