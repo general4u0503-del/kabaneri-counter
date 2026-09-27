@@ -143,6 +143,8 @@
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('red','chance',-1)">−</button><button class="plus" onclick="changeCount('red','chance',1)">＋</button></div>
       <div class="counter-row"><div class="label">発光回数</div><div class="value" id="red-light">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('red','light',-1)">−</button><button class="plus" onclick="changeCount('red','light',1)">＋</button></div>
+      <div class="counter-row"><div class="label">発光中チャンス目</div><div class="value" id="red-lightChance">0</div><div></div></div>
+      <div class="counter-row"><div></div><button class="minus" onclick="changeCount('red','lightChance',-1)">−</button><button class="plus" onclick="changeCount('red','lightChance',1)">＋</button></div>
       <div class="counter-row"><div class="label">高確中チャンス目</div><div class="value" id="red-high">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('red','high',-1)">−</button><button class="plus" onclick="changeCount('red','high',1)">＋</button></div>
       <button class="output" onclick="outputScore('red')">出力</button>
@@ -154,6 +156,8 @@
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('green','chance',-1)">−</button><button class="plus" onclick="changeCount('green','chance',1)">＋</button></div>
       <div class="counter-row"><div class="label">発光回数</div><div class="value" id="green-light">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('green','light',-1)">−</button><button class="plus" onclick="changeCount('green','light',1)">＋</button></div>
+      <div class="counter-row"><div class="label">発光中チャンス目</div><div class="value" id="green-lightChance">0</div><div></div></div>
+      <div class="counter-row"><div></div><button class="minus" onclick="changeCount('green','lightChance',-1)">−</button><button class="plus" onclick="changeCount('green','lightChance',1)">＋</button></div>
       <div class="counter-row"><div class="label">高確中チャンス目</div><div class="value" id="green-high">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('green','high',-1)">−</button><button class="plus" onclick="changeCount('green','high',1)">＋</button></div>
       <button class="output" onclick="outputScore('green')">出力</button>
@@ -165,6 +169,8 @@
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('blue','chance',-1)">−</button><button class="plus" onclick="changeCount('blue','chance',1)">＋</button></div>
       <div class="counter-row"><div class="label">発光回数</div><div class="value" id="blue-light">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('blue','light',-1)">−</button><button class="plus" onclick="changeCount('blue','light',1)">＋</button></div>
+      <div class="counter-row"><div class="label">発光中チャンス目</div><div class="value" id="blue-lightChance">0</div><div></div></div>
+      <div class="counter-row"><div></div><button class="minus" onclick="changeCount('blue','lightChance',-1)">−</button><button class="plus" onclick="changeCount('blue','lightChance',1)">＋</button></div>
       <div class="counter-row"><div class="label">高確中チャンス目</div><div class="value" id="blue-high">0</div><div></div></div>
       <div class="counter-row"><div></div><button class="minus" onclick="changeCount('blue','high',-1)">−</button><button class="plus" onclick="changeCount('blue','high',1)">＋</button></div>
       <button class="output" onclick="outputScore('blue')">出力</button>
@@ -181,9 +187,9 @@
 
 <script>
 const state = {
-  red:   { name: '無名', chance: 0, light: 0, high: 0, last: {chance:0, light:0, high:0}, total: 0 },
-  green: { name: '生駒', chance: 0, light: 0, high: 0, last: {chance:0, light:0, high:0}, total: 0 },
-  blue:  { name: 'カバネ', chance: 0, light: 0, high: 0, last: {chance:0, light:0, high:0}, total: 0 }
+  red:   { name: '無名', chance: 0, light: 0, lightChance: 0, high: 0, last: {chance:0, light:0, lightChance:0, high:0}, total: 0 },
+  green: { name: '生駒', chance: 0, light: 0, lightChance: 0, high: 0, last: {chance:0, light:0, lightChance:0, high:0}, total: 0 },
+  blue:  { name: 'カバネ', chance: 0, light: 0, lightChance: 0, high: 0, last: {chance:0, light:0, lightChance:0, high:0}, total: 0 }
 };
 const history = [];
 
@@ -216,22 +222,24 @@ function outputScore(color) {
   const dc = s.chance - s.last.chance;
   const dl = s.light - s.last.light;
   const dh = s.high - s.last.high;
+  const dlc = s.lightChance - s.last.lightChance;
 
-  // 赤・緑は従来どおり：チャンス目×1、発光×15、高確×15
-  // 青（カバネ）のみ：チャンス目×1、発光×2、高確中チャンス目×2
+  // 赤・緑： (チャンス目−発光)×1 ＋ 発光×15 ＋ 発光中チャンス目×1 ＋ 高確×15
+  // 青（カバネ）： (チャンス目−発光)×1 ＋ 発光×2 ＋ 発光中チャンス目×1 ＋ 高確×2
   const points = color === 'blue'
-    ? (dc - dl) * 1 + dl * 2 + dh * 2
-    : (dc - dl) * 1 + dl * 15 + dh * 15;
+    ? (dc - dl) * 1 + dl * 2 + dlc * 1 + dh * 2
+    : (dc - dl) * 1 + dl * 15 + dlc * 1 + dh * 15;
 
   s.total += points;
   history.unshift({
-    id: Date.now() + Math.random(), color, name: s.name, dc, dl, dh, points,
-    snapshot: { chance: s.chance, light: s.light, high: s.high },
+    id: Date.now() + Math.random(), color, name: s.name, dc, dl, dlc, dh, points,
+    snapshot: { chance: s.chance, light: s.light, lightChance: s.lightChance, high: s.high },
     time: new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit', second:'2-digit'})
   });
 
   s.last.chance = s.chance;
   s.last.light = s.light;
+  s.last.lightChance = s.lightChance;
   s.last.high = s.high;
   updateDisplay();
 }
@@ -240,6 +248,7 @@ function updateDisplay() {
   for (const color of ['red','green','blue']) {
     document.getElementById(color + '-chance').textContent = state[color].chance;
     document.getElementById(color + '-light').textContent = state[color].light;
+    document.getElementById(color + '-lightChance').textContent = state[color].lightChance;
     document.getElementById(color + '-high').textContent = state[color].high;
   }
 
@@ -262,7 +271,7 @@ function renderHistory() {
     <div class="history-item">
       <div class="history-name">${h.name}</div>
       <div class="history-detail">
-        チャンス目 ${h.dc}回 ×1 ＋ 発光 ${h.dl}回 ×${h.color === 'blue' ? 2 : 15} ＋ 高確 ${h.dh}回 ×${h.color === 'blue' ? 2 : 15}<br>
+        (チャンス目 ${h.dc}回 − 発光 ${h.dl}回) ×1 ＋ 発光 ${h.dl}回 ×${h.color === 'blue' ? 2 : 15} ＋ 発光中チャンス目 ${h.dlc}回 ×1 ＋ 高確 ${h.dh}回 ×${h.color === 'blue' ? 2 : 15}<br>
         ${h.time}
       </div>
       <div class="history-points">${h.points}点</div>
@@ -283,7 +292,7 @@ function deleteHistory(id) {
   const latest = history.find(h => h.color === item.color);
   state[item.color].last = latest
     ? { ...latest.snapshot }
-    : { chance: 0, light: 0, high: 0 };
+    : { chance: 0, light: 0, lightChance: 0, high: 0 };
 
   updateDisplay();
 }
